@@ -9,6 +9,7 @@ import android.media.AudioRecord;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.NotificationCompat;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.os.Bundle;
 import android.os.Environment;
@@ -43,6 +44,8 @@ public class MainActivity extends Activity {
     private PlayButton   mPlayButton = null;
     private MediaPlayer   mPlayer = null;
 
+    private EditText mEditText = null;
+
     private FrequencyScanner frequencyScanner = null;
 
     private void onRecord(boolean start) {
@@ -55,22 +58,22 @@ public class MainActivity extends Activity {
 
     private void onPlay(boolean start) {
         if (start) {
-            startPlaying();
+//            startPlaying();
         } else {
             stopPlaying();
         }
     }
 
-    private void startPlaying() {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(mFileName);
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
+//    private void startPlaying() {
+//        mPlayer = new MediaPlayer();
+//        try {
+//            mPlayer.setDataSource(mFileName);
+//            mPlayer.prepare();
+//            mPlayer.start();
+//        } catch (IOException e) {
+//            Log.e(LOG_TAG, "prepare() failed");
+//        }
+//    }
 
     private void stopPlaying() {
         mPlayer.release();
@@ -100,6 +103,7 @@ public class MainActivity extends Activity {
         frequencyScanner = new FrequencyScanner();
         double frequency = frequencyScanner.extractFrequency(buffer, 44100);
         System.out.println(frequency);
+        logToDisplay("Frequency: " + frequency);
 //        isRecording = true;
 //        recordingThread = new Thread(new Runnable() {
 //            public void run() {
@@ -109,7 +113,7 @@ public class MainActivity extends Activity {
 //        recordingThread.start();
 
 
-        
+
 
 
 
@@ -125,29 +129,16 @@ public class MainActivity extends Activity {
 
     int minSize = 0;
 
-    private void readAudioStream() {
-
+    public void logToDisplay(final String line) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+//                mEditText = (EditText)MainActivity.this
+//                        .findViewById(R.id.FrequencyText);
+                mEditText.append(line+"\n");
+            }
+        });
     }
 
-
-    private void sendNotification(String message) {
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
-                        .setContentTitle("AudioDetectionTest")
-                        .setContentText(message);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntent(new Intent(this, MainActivity.class));
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        builder.setContentIntent(resultPendingIntent);
-        NotificationManager notificationManager =
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, builder.build());
-    }
 
 
 
@@ -287,8 +278,14 @@ public class MainActivity extends Activity {
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
+//        mPlayButton = new PlayButton(this);
+//        ll.addView(mPlayButton,
+//                new LinearLayout.LayoutParams(
+//                        ViewGroup.LayoutParams.WRAP_CONTENT,
+//                        ViewGroup.LayoutParams.WRAP_CONTENT,
+//                        0));
+        mEditText = new EditText(this);
+        ll.addView(mEditText,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
